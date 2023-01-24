@@ -1,0 +1,18 @@
+1. 					  Склад <-> Warehouse
+2. 			      Остаток на складе <-> Residues_on_Warehouse
+3. 	  Организации покупатели и частные лица <-> Organizations,_Buyers_and_Individuals
+4. 				    Вид расхода <-> Type_of_Expenses
+5. 				 Состав расхода <-> Expenses
+6. 		        Расход товара на складе <-> Goods_Expended_in_Warehouse
+7.      	        Организации поставщиков <-> Supplier_Organization
+8. 		        Приход товаров на склад <-> Arrival_of_Goods_in_Warehouse
+9. 			       Состав накладной <-> Composition_of_The_Consignment_Note
+10. 		  Составление накладной убытков <-> Drafting_of_Overhead_Damages
+11. 			  Срок годности товаров <-> Shelf_Life_of_Goods
+12. 					   Брак <-> Defects
+13. 					 Товары <-> Goods
+14. Остаток на складе и расход товара на складе <-> Residues_on_Warehouse_and_Goods_Expended_in_Warehouse
+--------------------------------------------------------------------------------------------------------------------
+
+
+

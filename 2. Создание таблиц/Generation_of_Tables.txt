@@ -1,0 +1,187 @@
+-- CREATE DATABASE Warehouse_Recycling
+
+USE Warehouse_Recycling
+
+
+
+CREATE TABLE Warehouse
+(
+	Warehouse_Number BIGINT NOT NULL,
+	Warehouse_Name NVARCHAR (50) NOT NULL,
+	Warehouse_Details NVARCHAR (200) NULL,
+
+	PRIMARY KEY (Warehouse_Number)
+);
+
+CREATE TABLE Residues_on_Warehouse
+(
+	Warehouse_Number BIGINT NOT NULL,
+	Set_Number BIGINT NOT NULL,
+	Quantity BIGINT NOT NULL,
+	Resides_Count_Date DATETIME2 NOT NULL,
+
+	PRIMARY KEY (Warehouse_Number, Set_Number),
+
+	FOREIGN KEY (Warehouse_Number) REFERENCES Warehouse (Warehouse_Number)
+);
+
+CREATE TABLE Organizations_or_Buyers_and_Individuals
+(
+	Organization_or_Individual_Number BIGINT NOT NULL,
+	Organization_or_Individual_Name NVARCHAR (50) NULL
+
+	PRIMARY KEY (Organization_or_Individual_Number)
+);
+
+CREATE TABLE Type_of_Expenses
+(
+	Payment_Order_Number BIGINT NOT NULL,
+	[Name] NVARCHAR (100),
+
+	PRIMARY KEY (Payment_Order_Number)
+);
+
+CREATE TABLE Expenses
+(
+	Limit_Card_Number BIGINT NOT NULL,
+	Payment_Order_Number BIGINT NOT NULL,
+	Expense_Time DATETIME2 NOT NULL,
+	Amount_of_Goods BIGINT NOT NULL,
+	Type_of_Expense NVARCHAR (50) NOT NULL,
+
+	PRIMARY KEY (Limit_Card_Number, Payment_Order_Number),
+
+	FOREIGN KEY (Payment_Order_Number) REFERENCES Type_of_Expenses (Payment_Order_Number)
+);
+
+CREATE TABLE Goods_Expended_in_Warehouse
+(
+	Warehouse_Number BIGINT NOT NULL,
+	Limit_Card_Number BIGINT NOT NULL,
+	Payment_Order_Number BIGINT NOT NULL,
+	Organization_or_Individual_Number BIGINT NOT NULL,
+	Good_Name NVARCHAR (50) NOT NULL,
+	Limit BIGINT NOT NULL,
+	Expended_Time DATETIME2 NOT NULL,
+	Division_Name NVARCHAR (50) NOT NULL,
+	Buyer_Name NVARCHAR (50) NOT NULL,
+
+	PRIMARY KEY (Warehouse_Number, Limit_Card_Number,
+	Payment_Order_Number, Organization_or_Individual_Number, Good_Name),
+
+	FOREIGN KEY (Warehouse_Number) REFERENCES Warehouse (Warehouse_Number),
+	FOREIGN KEY (Organization_or_Individual_Number) REFERENCES
+	Organizations_or_Buyers_and_Individuals (Organization_or_Individual_Number),
+	FOREIGN KEY (Limit_Card_Number, Payment_Order_Number) REFERENCES
+	Expenses (Limit_Card_Number, Payment_Order_Number)
+	
+);
+
+CREATE TABLE Supplier_Organization
+(
+	Organization_Number BIGINT NOT NULL,
+	Organization_Name NVARCHAR (50) NOT NULL,
+	Organization_Description NVARCHAR (200) NOT NULL,
+
+	PRIMARY KEY (Organization_Number)
+);
+
+CREATE TABLE Composition_of_The_Consignment_Note
+(
+	Consignment_Note_Number BIGINT NOT NULL,
+	Set_Number BIGINT NOT NULL,
+	Quantity BIGINT NOT NULL,
+
+	PRIMARY KEY (Consignment_Note_Number, Set_Number),
+);
+
+CREATE TABLE Arrival_of_Goods_in_Warehouse
+(
+	Warehouse_Number BIGINT NOT NULL,
+	Consignment_Note_Number BIGINT NOT NULL,
+	Set_Number BIGINT NOT NULL,
+	Organization_Number BIGINT NOT NULL,
+	Bill_Type NVARCHAR (50) NOT NULL,
+
+	PRIMARY KEY (Warehouse_Number, Consignment_Note_Number, Set_Number, Organization_Number),
+
+	FOREIGN KEY (Warehouse_Number) REFERENCES Warehouse (Warehouse_Number),
+	FOREIGN KEY (Consignment_Note_Number, Set_Number) REFERENCES
+	Composition_of_The_Consignment_Note (Consignment_Note_Number, Set_Number),
+	FOREIGN KEY (Organization_Number) REFERENCES Supplier_Organization (Organization_Number)
+);
+
+CREATE TABLE Drafting_of_Overhead_Damages
+(
+	Set_Number BIGINT NOT NULL,
+	Quantity BIGINT NOT NULL,
+	Cost BIGINT NOT NULL,
+	Consignment_Note_Number BIGINT,
+
+	PRIMARY KEY (Set_Number)
+);
+
+CREATE TABLE Shelf_Life_of_Goods
+(
+	Set_Number BIGINT NOT NULL,
+	Expiration_Date DATETIME2 NOT NULL,
+	Quantity BIGINT NOT NULL,
+	Cost BIGINT NOT NULL,
+
+	PRIMARY KEY (Set_Number, Expiration_Date),
+
+	FOREIGN KEY (Set_Number) REFERENCES Drafting_of_Overhead_Damages (Set_Number)
+);
+
+CREATE TABLE Defects
+(
+	Set_Number BIGINT NOT NULL,
+	Good_Name NVARCHAR (50) NOT NULL,
+	Quantity BIGINT NOT NULL,
+	Cost BIGINT NOT NULL,
+
+	PRIMARY KEY (Set_Number, Good_Name),
+
+	FOREIGN KEY (Set_Number) REFERENCES Drafting_of_Overhead_Damages (Set_Number)
+);
+
+CREATE TABLE Goods
+(
+	Consignment_Note_Number BIGINT NOT NULL,
+	Set_Number BIGINT NOT NULL,
+	Expiration_Date DATETIME2 NOT NULL,
+	Good_Name NVARCHAR (50) NOT NULL,
+	Units_of_Measurement NVARCHAR (50) NOT NULL,
+	Good_Cost BIGINT NOT NULL,
+
+	PRIMARY KEY (Consignment_Note_Number, Set_Number, Expiration_Date, Good_Name),
+
+	FOREIGN KEY (Consignment_Note_Number, Set_Number) REFERENCES
+	Composition_of_The_Consignment_Note (Consignment_Note_Number, Set_Number), 
+	FOREIGN KEY (Set_Number, Expiration_Date) REFERENCES Shelf_Life_of_Goods (Set_Number, Expiration_Date),
+	FOREIGN KEY (Set_Number, Good_Name) REFERENCES Defects (Set_Number, Good_Name)
+);
+
+CREATE TABLE Residues_on_Warehouse_and_Goods_Expended_in_Warehouse
+(
+	Warehouse_Number BIGINT NOT NULL,
+	Limit_Card_Number BIGINT NOT NULL,
+	Payment_Order_Number BIGINT NOT NULL,
+	Organization_or_Individual_Number BIGINT NOT NULL,
+	Good_Name NVARCHAR (50) NOT NULL,
+	Set_Number BIGINT NOT NULL,
+	Consignment_Note_Number BIGINT NOT NULL,
+	Expiration_Date DATETIME2 NOT NULL,
+
+	PRIMARY KEY (Warehouse_Number, Limit_Card_Number, Payment_Order_Number,
+	Organization_or_Individual_Number, Good_Name, Set_Number, Consignment_Note_Number, Expiration_Date),
+
+	FOREIGN KEY (Warehouse_Number, Set_Number) REFERENCES
+	Residues_on_Warehouse (Warehouse_Number, Set_Number),
+	FOREIGN KEY (Warehouse_Number, Limit_Card_Number, Payment_Order_Number,
+	Organization_or_Individual_Number, Good_Name) REFERENCES
+	Goods_Expended_in_Warehouse (Warehouse_Number, Limit_Card_Number, Payment_Order_Number,
+	Organization_or_Individual_Number, Good_Name),
+	FOREIGN KEY (Consignment_Note_Number, Set_Number, Expiration_Date, Good_Name) REFERENCES
+	Goods (Consignment_Note_Number, Set_Number, Expiration_Date, Good_Name)
+);
